@@ -7,3 +7,5 @@ const songSchema = new mongoose.Schema({
     genre: { type: String, required: true },
     mood: { type: String, required: true },
 });
+
+export default song;

@@ -8,3 +8,6 @@ const moodEntrySchema = new mongoose.Schema({
     recommendedPlaylist: { type: String, required: true },
     recommendedsong: { type: String, required: true },
 });
+
+
+export default moodEntry;
