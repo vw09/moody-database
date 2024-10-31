@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const moodEntrySchema = new mongoose.Schema({
+const moodSchema = new mongoose.Schema({
     username: { type: String, required: true },
     Date: { type: Date, default: Date.now },
     mood: { type: String, required: true },
@@ -10,4 +10,4 @@ const moodEntrySchema = new mongoose.Schema({
 });
 
 
-export default moodEntry;
+export default Mood;
