@@ -10,4 +10,6 @@ router.get('/', (req, res) => {
   res.json({ message: 'Hello from the INDEX!' });
 });
 
+router.use('/users', users);
+
 export default router;
