@@ -8,4 +8,4 @@ const songSchema = new mongoose.Schema({
     mood: { type: String, required: true },
 });
 
-export default song;
+export default Song;

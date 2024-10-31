@@ -6,4 +6,4 @@ const playlistSchema = new mongoose.Schema({
     mood: { type: String, required: true },
 });
 
-export default playlist;
+export default Playlist;
