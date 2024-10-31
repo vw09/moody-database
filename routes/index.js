@@ -1,5 +1,6 @@
 import express from 'express';
 import users from './users.js';
+import Mood from '../models/Mood.js';
 
 
 
@@ -11,5 +12,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/users', users);
+router.use('/moods', Mood);
 
 export default router;
