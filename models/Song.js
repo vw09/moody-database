@@ -8,4 +8,5 @@ const songSchema = new mongoose.Schema({
     mood: { type: String, required: true },
 });
 
+const Song = mongoose.model('Song', songSchema);
 export default Song;

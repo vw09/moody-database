@@ -6,4 +6,7 @@ const playlistSchema = new mongoose.Schema({
     mood: { type: String, required: true },
 });
 
+
+const Playlist = mongoose.model('Playlist', playlistSchema);
+
 export default Playlist;
