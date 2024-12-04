@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import User from './models/User.js'; 
 import routeIndex from './routes/index.js';
+import moodsRoutes from './routes/moods.js';
+import playlistsRoutes from './routes/playlists.js';
+import songsRoutes from './routes/songs.js';
+
 
 
 dotenv.config();
@@ -14,6 +18,11 @@ const app = express();
 
 app.use(express.json());
 app.use('/', routeIndex);
+app.use('/moods', moodsRoutes);
+app.use('/playlists', playlistsRoutes);
+app.use('/songs', songsRoutes);
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
