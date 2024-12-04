@@ -1,12 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const playlistSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    songs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Song', }],
-    mood: { type: String, required: true },
+const PlaylistSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true, // Dit veld is verplicht
+    },
+    mood: {
+        type: String,
+        required: true, // Dit veld is verplicht
+    },
+    songIds: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Song',  // Verwijst naar de Song collectie
+        required: true, // Dit veld is verplicht
+    }]
 });
 
-
-const Playlist = mongoose.model('Playlist', playlistSchema);
+const Playlist = mongoose.model('Playlist', PlaylistSchema);
 
 export default Playlist;

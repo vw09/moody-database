@@ -1,28 +1,33 @@
 import express from 'express';
 import Playlist from '../models/Playlist.js';
+import Song from '../models/Song.js';
 
 const router = express.Router();
 
-// GET - Haal alle playlist op
+// GET - Haal alle afspeellijsten op
 router.get('/', async (req, res) => {
     try {
         const playlists = await Playlist.find();
         res.status(200).json(playlists);
     } catch (error) {
-        res.status(500).json({ message: 'Fout bij het ophalen van moods', error });
+        res.status(500).json({ message: 'Fout bij het ophalen van afspeellijsten', error });
     }
 });
 
-// POST - Voeg een nieuwe playlist toe
+// POST - Voeg een nieuwe afspeellijst toe
 router.post('/', async (req, res) => {
-    const playlists = new playlists(req.body);
+    console.log('Request Body:', req.body);  // Log de request body
+    const { name, mood, songIds } = req.body;
     try {
-        const newPlaylist = await playlists.save();
-        res.status(201).json(newPlaylist);
+        const newPlaylist = new Playlist({ name, mood, songIds });
+        const savedPlaylist = await newPlaylist.save();
+        res.status(201).json(savedPlaylist);
     } catch (error) {
-        res.status(400).json({ message: 'Fout bij het toevoegen van mood', error });
+        console.log('Error:', error);  // Log de fout om te zien waar het misgaat
+        res.status(400).json({ message: 'Fout bij het toevoegen van een afspeellijst', error });
     }
 });
+
 
 // Je kunt meer routes toevoegen voor GET, PUT, DELETE zoals nodig
 
