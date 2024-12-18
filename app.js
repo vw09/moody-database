@@ -15,7 +15,7 @@ dotenv.config();
 
 const app = express();
 
-console.log('MongoDB URI:', process.env.MONGODB_URI);
+console.log('MongoDB URI:', process.env.MONGO_URI);
 
 app.use(express.json());
 
@@ -42,7 +42,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'https://moody-database.onrender.com/auth/google/callback', // Replace with your deployment URL
+      callbackURL: 'https://moody-database.onrender.com/auth/google/callback', 
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -106,7 +106,7 @@ app.get(
   (req, res) => {
     const user = req.user;
     const { redirectUri } = JSON.parse(req.query.state); // Retrieve redirectUri from state
-    const fallbackUri = 'exp://localhost:19000'; // Update for your Expo app
+    const fallbackUri = 'exp://localhost:3000'; // Update for your Expo app
 
     const userInfo = {
       id: user._id,
