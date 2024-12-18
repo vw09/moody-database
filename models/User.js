@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     email: { type: String, required: true, unique: true },
     moodhistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mood', }],
     playlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist', }],
