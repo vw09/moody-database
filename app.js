@@ -41,7 +41,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://moody-database.onrender.com/auth/google/callback'
+  callbackURL: '/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails[0].value;
@@ -84,14 +84,21 @@ app.use('/playlists', playlistsRoute);
 app.use('/songs', songsRoute);
 
 // Google Authentication Routes
-app.get('/auth/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+app.get('/auth/google', (req, res, next) => {
+  const redirectUri = req.query.redirectUri;
 
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/' }),
+  const authOptions = {
+    scope: ['profile', 'email'],
+    state: JSON.stringify({ redirectUri }) // Encode redirectUri in state
+  };
+
+  passport.authenticate('google', authOptions)(req, res, next);
+});
+
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
     const user = req.user;
+    const { redirectUri } = JSON.parse(req.query.state);
     const fallbackUri = 'exp://localhost:3000'; // Update for your Expo app
 
     const userInfo = {
@@ -100,9 +107,7 @@ app.get('/auth/google/callback',
       email: user.email,
     };
 
-    const redirectUrl = `${fallbackUri}?user=${encodeURIComponent(
-      JSON.stringify(userInfo)
-    )}`;
+    const redirectUrl = `${redirectUri || fallbackUri}?user=${encodeURIComponent(JSON.stringify(userInfo))}`;
     res.redirect(redirectUrl);
   }
 );
