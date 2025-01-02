@@ -99,7 +99,7 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   (req, res) => {
     const user = req.user;
     const { redirectUri } = JSON.parse(req.query.state);
-    const fallbackUri = 'exp://localhost:3000'; // Update for your Expo app
+    const fallbackUri = 'exp://localhost:10000'; // Update for your Expo app
 
     const userInfo = {
       id: user._id,
