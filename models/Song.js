@@ -5,7 +5,7 @@ const songSchema = new mongoose.Schema({
     artist: { type: String, required: true },
     album: { type: String },
     genre: { type: String },
-    mood: { type: String, enum: ['angry', 'upset', 'sad', 'good', 'happy', 'spectacular'], required: true },
+    mood: { type: String, enum: ['angry', 'upset', 'sad', 'good', 'happy', 'spectaculair'], required: true },
     duration: { type: Number }, // Duration in seconds (optional)
 }, { timestamps: true });
 
