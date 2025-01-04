@@ -43,6 +43,7 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: 'https://moody-database.onrender.com/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
+  console.log(profile);
   try {
     const email = profile.emails[0].value;
     let user = await User.findOne({ email });
