@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Playlist from '../models/Playlist.js';
 
 const router = express.Router();

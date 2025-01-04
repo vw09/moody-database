@@ -13,6 +13,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET multiple songs by IDs
+router.get('/songs', async (req, res) => {
+    const { ids } = req.query;  // Verkrijg de song IDs uit de queryparameter
+    const songIds = ids.split(',');  // Zet de lijst om naar een array van ObjectIds
+
+    try {
+        const songs = await Song.find({ '_id': { $in: songIds } });  // Zoek songs op basis van de opgegeven songIds
+        res.status(200).json(songs);  // Stuur de gevonden songs terug naar de frontend
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching songs', error });
+    }
+});
+
 // POST a new song
 router.post('/', async (req, res) => {
     const songData = req.body;

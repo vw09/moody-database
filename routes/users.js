@@ -24,26 +24,21 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Route to fetch the last mood and its playlist
+// GET the last mood and its playlist
 router.get('/:id/last-mood', async (req, res) => {
-    const { id } = req.params; // userId
     try {
-        // Vind de gebruiker en populeer de moodHistory met de bijbehorende playlist en songs
-        const user = await User.findById(id).populate({
-            path: 'moodHistory', // Populeer de moodHistory
-            populate: { // Populeer de playlist en songs in de playlist
-                path: 'playlist',
-                populate: {
-                    path: 'songIds',
-                },
-            },
-        });
+        // Vind de gebruiker en populeer de `moodHistory` en de `playlist`
+        const user = await User.findById(req.params.id)
+            .populate({
+                path: 'moodHistory.playlist',
+                populate: { path: 'songIds' } // Populeer de songs in de playlist
+            });
 
         if (!user || !user.moodHistory || user.moodHistory.length === 0) {
             return res.status(404).json({ message: 'No mood history found for this user' });
         }
 
-        // Haal de laatste mood op uit de moodHistory
+        // Haal de laatste stemming op
         const lastMood = user.moodHistory[user.moodHistory.length - 1];
         res.status(200).json(lastMood);
     } catch (error) {
