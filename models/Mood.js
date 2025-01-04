@@ -5,7 +5,7 @@ const moodSchema = new mongoose.Schema({
     mood: { 
         type: String, 
         required: true,
-        enum: ['happy', 'sad', 'angry', 'spectaculair', 'good', 'upset'],  // Kleine letters voor de mood
+        enum: ['happy', 'sad', 'angry', 'spectacular', 'good', 'upset'],  // Kleine letters voor de mood
     },
     description: { type: String, required: true },
     recommendedPlaylist: { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' },

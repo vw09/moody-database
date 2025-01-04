@@ -1,9 +1,10 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import session from 'express-session';
+import mongoStore from 'connect-mongo'; // Session store for MongoDB
 import User from './models/User.js';
 import moodsRoute from './routes/moods.js';
 import usersRoute from './routes/users.js';
@@ -15,14 +16,22 @@ dotenv.config();
 
 const app = express();
 
+console.log('MongoDB URI:', process.env.MONGO_URI);
+
 app.use(express.json());
 
-// configure session middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-}));
+// Configure session middleware
+app.use(
+  session({
+    store: mongoStore.create({ mongoUrl: process.env.MONGO_URI }), // Connect sessions to MongoDB
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    },
+  })
+);
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -63,6 +72,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 mongoose.connect(process.env.MONGO_URI);
+
 const db = mongoose.connection;
 db.on('error', (error)=> console.error(error));
 db.once('open', ()=> console.log('Connected to Database'));
@@ -74,16 +84,27 @@ app.use('/playlists', playlistsRoute);
 app.use('/songs', songsRoute);
 
 // Google Authentication Routes
-app.get('/auth/google',
-   passport.authenticate('google', { scope: ['profile', 'email'] })
-  );
+app.get('/auth/google', 
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => {
+    const user = req.user;
+    const fallbackUri = 'exp://localhost:3000'; // Update for your Expo app
 
-app.get('/auth/google/callback',
-  passport.authenticate('google', { 
-    failureRedirect: '/',
-    successRedirect: '/index',
-  })
+    const userInfo = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+
+    const redirectUrl = `${fallbackUri}?user=${encodeURIComponent(
+      JSON.stringify(userInfo)
+    )}`;
+    res.redirect(redirectUrl);
+  }
 );
 
 const PORT = process.env.PORT || 3000;
