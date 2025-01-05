@@ -1,10 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import session from 'express-session';
 import mongoStore from 'connect-mongo'; // Session store for MongoDB
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from './models/User.js';
 import moodsRoute from './routes/moods.js';
 import usersRoute from './routes/users.js';
@@ -41,7 +41,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://moody-database.onrender.com/auth/google/callback'
+  callbackURL:'https://moody-database.onrender.com/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   console.log(profile);
   try {
@@ -53,10 +53,13 @@ passport.use(new GoogleStrategy({
         username: profile.displayName,
         email: email,
       });
+    } else {
+      console.log('User already exists:', user);
     }
 
     return done(null, user);
   } catch (error) {
+    console.error('Error during Google login:', error);
     return done(error, null);
   }
 }));
@@ -85,28 +88,37 @@ app.use('/playlists', playlistsRoute);
 app.use('/songs', songsRoute);
 
 // Google Authentication Routes
-app.get('/auth/google', 
+app.get('/auth/google', (req, res) => {
+  const redirectUri = req.query.redirectUri;
+  if (redirectUri) {
+    req.session.redirectUri = redirectUri;
+}
   passport.authenticate('google', { scope: ['profile', 'email'] })
+});
+
+app.get('/auth/google/callback', passport.authenticate('google', {failureRedirect: '/',
+}), (req, res) => {
+  const user = req.user;
+
+const redirectUri = req.session.redirectUri || 'exp://localhost:19000';
+const userInfo = {
+  id: user._id,
+  username: user.username,
+  email: user.email,
+};  
+
+const redirectUrl = `${redirectUri}?user=${encodeURIComponent(JSON.stringify(userInfo))}`;
+  res.redirect(redirectUrl);
+}
 );
 
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/' }),
-  (req, res) => {
-    const user = req.user;
-    const fallbackUri = 'exp://localhost:3000'; // Update for your Expo app
 
-    const userInfo = {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-    };
 
-    const redirectUrl = `${fallbackUri}?user=${encodeURIComponent(
-      JSON.stringify(userInfo)
-    )}`;
-    res.redirect(redirectUrl);
-  }
-);
+
+
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

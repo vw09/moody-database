@@ -3,28 +3,19 @@ import Song from '../models/Song.js';
 
 const router = express.Router();
 
-// GET all songs
-router.get('/', async (req, res) => {
-    try {
-        const songs = await Song.find();
-        res.status(200).json(songs);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching songs', error });
-    }
+
+// GET random song
+router.get('/random', async (req, res) => {
+  try {
+    const count = await Song.countDocuments(); // Tel het totale aantal songs
+    const random = Math.floor(Math.random() * count); // Kies een random index
+    const randomSong = await Song.findOne().skip(random); // Sla de eerste 'random' nummers over
+    res.status(200).json(randomSong); // Stuur de random song terug
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching random song', error });
+  }
 });
 
-// GET multiple songs by IDs
-router.get('/songs', async (req, res) => {
-    const { ids } = req.query;  // Verkrijg de song IDs uit de queryparameter
-    const songIds = ids.split(',');  // Zet de lijst om naar een array van ObjectIds
-
-    try {
-        const songs = await Song.find({ '_id': { $in: songIds } });  // Zoek songs op basis van de opgegeven songIds
-        res.status(200).json(songs);  // Stuur de gevonden songs terug naar de frontend
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching songs', error });
-    }
-});
 
 // POST a new song
 router.post('/', async (req, res) => {

@@ -7,7 +7,7 @@ const router = express.Router();
 // GET all playlists
 router.get('/', async (req, res) => {
     try {
-        const playlists = await Playlist.find().populate('songIds');
+        const playlists = await Playlist.find().populate('songIds'); // Populeer de songIds met volledige songinformatie
         res.status(200).json(playlists);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching playlists', error });
