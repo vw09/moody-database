@@ -3,7 +3,6 @@ import Song from '../models/Song.js';
 
 const router = express.Router();
 
-
 // GET random song
 router.get('/random', async (req, res) => {
   try {
@@ -16,28 +15,43 @@ router.get('/random', async (req, res) => {
   }
 });
 
-
 // POST a new song
 router.post('/', async (req, res) => {
-    const songData = req.body;
-    try {
-        const newSong = new Song(songData);
-        const savedSong = await newSong.save();
-        res.status(201).json(savedSong);
-    } catch (error) {
-        res.status(400).json({ message: 'Error adding song', error });
-    }
+  const songData = req.body;
+  try {
+    const newSong = new Song(songData);
+    const savedSong = await newSong.save();
+    res.status(201).json(savedSong);
+  } catch (error) {
+    res.status(400).json({ message: 'Error adding song', error });
+  }
 });
 
 // DELETE a song by ID
 router.delete('/:id', async (req, res) => {
-    try {
-        const deletedSong = await Song.findByIdAndDelete(req.params.id);
-        if (!deletedSong) return res.status(404).json({ message: 'Song not found' });
-        res.status(200).json({ message: 'Song deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting song', error });
-    }
+  try {
+    const deletedSong = await Song.findByIdAndDelete(req.params.id);
+    if (!deletedSong) return res.status(404).json({ message: 'Song not found' });
+    res.status(200).json({ message: 'Song deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting song', error });
+  }
+});
+
+// PUT update a song by ID
+router.put('/:id', async (req, res) => {
+  const { title, artist } = req.body; // Wat de gebruiker kan aanpassen
+  try {
+    const updatedSong = await Song.findByIdAndUpdate(
+      req.params.id,
+      { title, artist }, // Velden om bij te werken
+      { new: true, runValidators: true } // Retourneer het bijgewerkte document
+    );
+    if (!updatedSong) return res.status(404).json({ message: 'Song not found' });
+    res.status(200).json(updatedSong);
+  } catch (error) {
+    res.status(400).json({ message: 'Error updating song', error });
+  }
 });
 
 export default router;
