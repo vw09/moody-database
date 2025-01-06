@@ -1,44 +1,38 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Mood from '../models/Mood.js';
-import Playlist from '../models/Playlist.js';
 import User from '../models/User.js';
 
 const router = express.Router();
 
 // POST: Sla een nieuwe mood op
-router.post('/', async (req, res) => {
-  const { user, mood, description } = req.body;
+router.post('/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { mood, description } = req.body;
 
-  if (!user || !mood || !description) {
-    return res.status(400).json({ message: 'User, mood, and description are required' });
+  if (!mood || !description) {
+    return res.status(400).json({ message: 'Mood and description are required' });
   }
 
   try {
-    const userId = mongoose.Types.ObjectId(user); // Converteer user naar ObjectId
-
-    // Zoek een aanbevolen playlist op basis van de mood
-    const recommendedPlaylist = await Playlist.findOne({ mood });
-    const recommendedSong = recommendedPlaylist?.songs?.[0] || null;
+    const userIdObject = mongoose.Types.ObjectId(userId); // Zorg ervoor dat userId een ObjectId is
 
     // Maak een nieuw mood-object aan
     const newMood = new Mood({
-      user: userId,
+      user: userIdObject,
       mood,
       description,
-      recommendedPlaylist: recommendedPlaylist?._id || null,
-      recommendedSong,
     });
 
     // Sla de mood op
     const savedMood = await newMood.save();
 
     // Voeg de mood toe aan de gebruiker
-    await User.findByIdAndUpdate(userId, {
+    await User.findByIdAndUpdate(userIdObject, {
       $push: { moodHistory: savedMood._id },
     });
 
-    res.status(201).json({
+    res.status(200).json({
       message: 'Mood saved successfully',
       mood: savedMood,
     });
